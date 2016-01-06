@@ -47,6 +47,7 @@
 }
 
 - (void)prepare {
+    // [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:nil];
     [_timer invalidate], _timer = nil;
     NSError *error = nil;
     self.player = [[AVAudioPlayer alloc] initWithContentsOfURL:[NSURL fileURLWithPath:_currentAudioItem.audioPath] error:&error];
@@ -54,6 +55,7 @@
     [_player prepareToPlay]; // 准备播放
     if (error) return;
     self.lrcParser = [[ZZLRCParser alloc] initWithFilePath:_currentAudioItem.lrcPath]; // 歌词解析
+    // NSLog(@"--%ld", [self.audioList indexOfObject:_currentAudioItem]);
     [self configNowPlayingInfoCenter];
     [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
 }
@@ -64,7 +66,8 @@
         // NSLog(@"开始播放");
     }
     
-    if (self.timer == nil) {
+    if (_timer == nil) {
+        NSLog(@"走你!");
         self.timer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(timerAction:) userInfo:nil repeats:YES]; // 每隔一小段时间，通过timerAction:方法更新显示的歌词，更新进度条 NSTimer对象有点特殊，它们retain target，所以在当前视图消失的时候应当把定时器invalide，销毁
     }
     [self.timer setFireDate:[NSDate date]]; // 触发定时器方法，写成[NSDate distantPast]也行
@@ -110,6 +113,8 @@
 
 // 定时器刷新进度条
 - (void)timerAction:(NSTimer *)timer {
+    // NSLog(@"主线程：%d", [NSThread isMainThread]);
+    
     // 更新进度条 player.currentTime当前播放时间 player.duration整个歌曲共占用的时候
     self.progress.value = self.player.currentTime/self.player.duration;
     
@@ -128,10 +133,21 @@
 - (void)refreshArtwork {
     if (_currentAudioItem.image) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[MPNowPlayingInfoCenter defaultCenter] nowPlayingInfo]];
+        NSLog(@"refreshArtwork内存地址：%p", dict); // 打印结果显示这个内存地址不断的在变化
+        
         // MPMediaItemArtwork *artwork = [dict objectForKey:MPMediaItemPropertyArtwork];
         UIImage *image = [ZZArtworkHelper artworkImageWithOriginImage:_currentAudioItem.image text:_lrcLabel.text];
         MPMediaItemArtwork *newArtwork = [[MPMediaItemArtwork alloc] initWithImage:image];
         [dict setObject:newArtwork forKey:MPMediaItemPropertyArtwork];
+        
+        // [dict setObject:_lrcParser.title forKey:MPMediaItemPropertyTitle]; // 歌曲名
+        // NSLog(@"Now: %@", [dict objectForKey:MPMediaItemPropertyTitle]);
+        
+        [dict setObject:_lrcParser.title forKey:MPMediaItemPropertyTitle]; // 歌曲名
+        [dict setObject:_lrcParser.author forKey:MPMediaItemPropertyArtist];  // 歌首，艺术家
+        [dict setObject:_lrcParser.albume forKey:MPMediaItemPropertyAlbumTitle]; // 专辑名
+        [dict setObject:@(self.player.duration) forKey:MPMediaItemPropertyPlaybackDuration];  // 时间
+        
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
     }
 }
@@ -171,7 +187,7 @@
 
 // 后台播放信息显示
 - (void)configNowPlayingInfoCenter {
-    NSLog(@"%@ title: %@", NSStringFromSelector(_cmd), _lrcParser.title);
+    // NSLog(@"%@ title: %@", NSStringFromSelector(_cmd), _lrcParser.title);
     if (NSClassFromString(@"MPNowPlayingInfoCenter")) { // 类MPNowPlayingInfoCenter是否存在，因为这个类是5.0之后出现的
         NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
         
@@ -190,10 +206,11 @@
          Use a now playing info center to set now-playing information for media being played by your app.
          */
         
-        UIImage *image = _currentAudioItem.image ? [ZZArtworkHelper artworkImageWithOriginImage:_currentAudioItem.image text:_lrcLabel.text] : [UIImage imageNamed:@"placeholder"];
+        UIImage *image = _currentAudioItem.image ? [ZZArtworkHelper artworkImageWithOriginImage:_currentAudioItem.image text:_lrcParser.title] : [UIImage imageNamed:@"placeholder"];
         MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:image];
         [dict setObject:artwork forKey:MPMediaItemPropertyArtwork];
         
+        NSLog(@"configuration内存地址: %p", dict);
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
     }
 }

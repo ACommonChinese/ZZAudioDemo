@@ -161,6 +161,13 @@
 		DAF103AA1C3BAB3500A38DE3 /* Resource */ = {
 			isa = PBXGroup;
 			children = (
+				DAF1040A1C3D0C9600A38DE3 /* placeholder.png */,
+				DAF103CB1C3CAA2600A38DE3 /* test_0.jpg */,
+				DAF103CE1C3CB2B600A38DE3 /* test_1.jpg */,
+				DAF103CD1C3CB2B600A38DE3 /* test_2.jpg */,
+				DAF103CF1C3CB2B600A38DE3 /* test_3.jpg */,
+				DAF103D51C3CB2BC00A38DE3 /* test_4.jpg */,
+				DAF103D01C3CB2B600A38DE3 /* test_5.jpg */,
 				DAF103AB1C3BAB3500A38DE3 /* 北京北京.lrc */,
 				DAF103AC1C3BAB3500A38DE3 /* 北京北京.mp3 */,
 				DAF103AD1C3BAB3500A38DE3 /* 喜欢你.lrc */,
@@ -173,13 +180,6 @@
 				DAF103B41C3BAB3500A38DE3 /* 我的歌声里.mp3 */,
 				DAF103B51C3BAB3500A38DE3 /* 白月光.lrc */,
 				DAF103B61C3BAB3500A38DE3 /* 白月光.mp3 */,
-				DAF103CB1C3CAA2600A38DE3 /* test_0.jpg */,
-				DAF103CD1C3CB2B600A38DE3 /* test_2.jpg */,
-				DAF103CE1C3CB2B600A38DE3 /* test_1.jpg */,
-				DAF103CF1C3CB2B600A38DE3 /* test_3.jpg */,
-				DAF103D51C3CB2BC00A38DE3 /* test_4.jpg */,
-				DAF103D01C3CB2B600A38DE3 /* test_5.jpg */,
-				DAF1040A1C3D0C9600A38DE3 /* placeholder.png */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
