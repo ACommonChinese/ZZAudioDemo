@@ -4,7 +4,7 @@
 //
 //  Created by 刘威振 on 16/1/5.
 //  Copyright © 2016年 LiuWeiZhen. All rights reserved.
-//
+//  参考：http://www.iliunian.com/2831.html
 //
 
 #import "LocalAudioViewController.h"
@@ -98,6 +98,13 @@
 // 更改播放进度
 - (IBAction)progressAction:(UISlider *)slider {
     self.player.currentTime = self.player.duration*_progress.value; // 正在播放（秒）
+    
+    // 锁屏状态下进度条
+    /**
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[MPNowPlayingInfoCenter defaultCenter] nowPlayingInfo]];
+    [dict setObject:[NSNumber numberWithDouble:self.player.currentTime] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
+     */
 }
 
 // 定时器刷新进度条
@@ -155,6 +162,7 @@
         [dict setObject:_lrcParser.title forKey:MPMediaItemPropertyTitle]; // 歌曲名
         [dict setObject:_lrcParser.author forKey:MPMediaItemPropertyArtist];  // 歌首，艺术家
         [dict setObject:_lrcParser.albume forKey:MPMediaItemPropertyAlbumTitle]; // 专辑名
+        [dict setObject:@(self.player.duration) forKey:MPMediaItemPropertyPlaybackDuration];  // 时间
         
         // MPMediaItem *item = [[MPMediaItem alloc] init];
         // item.title =
@@ -206,5 +214,23 @@
 - (BOOL)canBecomeFirstResponder {
     return YES;
 }
+
+/**
+- (void) viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+    [self becomeFirstResponder];
+}
+
+- (void) viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    [UIApplication sharedApplication] endReceivingRemoteControlEvents];
+    [self resignFirstResponder];
+}
+ 
+ 当然也不一定是在viewcontroller中，也可以是在applicationDidEnterBackground:方法中开始接受远程控制，applicationDidBecomeActive:中结束接受远程控制
+*/
 
 @end
