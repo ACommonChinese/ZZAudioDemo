@@ -38,6 +38,9 @@
 		DAF103D31C3CB2B600A38DE3 /* test_3.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DAF103CF1C3CB2B600A38DE3 /* test_3.jpg */; };
 		DAF103D41C3CB2B600A38DE3 /* test_5.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DAF103D01C3CB2B600A38DE3 /* test_5.jpg */; };
 		DAF103D61C3CB2BC00A38DE3 /* test_4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = DAF103D51C3CB2BC00A38DE3 /* test_4.jpg */; };
+		DAF104061C3CFA6B00A38DE3 /* ZZArtworkHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF104051C3CFA6B00A38DE3 /* ZZArtworkHelper.m */; };
+		DAF104091C3D042F00A38DE3 /* UIImage+ZZHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = DAF104081C3D042F00A38DE3 /* UIImage+ZZHelper.m */; };
+		DAF1040B1C3D0C9600A38DE3 /* placeholder.png in Resources */ = {isa = PBXBuildFile; fileRef = DAF1040A1C3D0C9600A38DE3 /* placeholder.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -80,6 +83,11 @@
 		DAF103CF1C3CB2B600A38DE3 /* test_3.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test_3.jpg; sourceTree = "<group>"; };
 		DAF103D01C3CB2B600A38DE3 /* test_5.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test_5.jpg; sourceTree = "<group>"; };
 		DAF103D51C3CB2BC00A38DE3 /* test_4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test_4.jpg; sourceTree = "<group>"; };
+		DAF104041C3CFA6B00A38DE3 /* ZZArtworkHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZZArtworkHelper.h; sourceTree = "<group>"; };
+		DAF104051C3CFA6B00A38DE3 /* ZZArtworkHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ZZArtworkHelper.m; sourceTree = "<group>"; };
+		DAF104071C3D042F00A38DE3 /* UIImage+ZZHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+ZZHelper.h"; sourceTree = "<group>"; };
+		DAF104081C3D042F00A38DE3 /* UIImage+ZZHelper.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+ZZHelper.m"; sourceTree = "<group>"; };
+		DAF1040A1C3D0C9600A38DE3 /* placeholder.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = placeholder.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +137,10 @@
 				DAF103C41C3BB3A200A38DE3 /* ZZAudioItem.m */,
 				DAF103C61C3BB94700A38DE3 /* ZZLRCParser.h */,
 				DAF103C71C3BB94700A38DE3 /* ZZLRCParser.m */,
+				DAF104041C3CFA6B00A38DE3 /* ZZArtworkHelper.h */,
+				DAF104051C3CFA6B00A38DE3 /* ZZArtworkHelper.m */,
+				DAF104071C3D042F00A38DE3 /* UIImage+ZZHelper.h */,
+				DAF104081C3D042F00A38DE3 /* UIImage+ZZHelper.m */,
 				DAF103AA1C3BAB3500A38DE3 /* Resource */,
 				DAF103601C3B99B100A38DE3 /* Assets.xcassets */,
 				DAF103621C3B99B100A38DE3 /* LaunchScreen.storyboard */,
@@ -167,6 +179,7 @@
 				DAF103CF1C3CB2B600A38DE3 /* test_3.jpg */,
 				DAF103D51C3CB2BC00A38DE3 /* test_4.jpg */,
 				DAF103D01C3CB2B600A38DE3 /* test_5.jpg */,
+				DAF1040A1C3D0C9600A38DE3 /* placeholder.png */,
 			);
 			path = Resource;
 			sourceTree = "<group>";
@@ -246,6 +259,7 @@
 				DAF103D61C3CB2BC00A38DE3 /* test_4.jpg in Resources */,
 				DAF103BD1C3BAB3500A38DE3 /* 大约在冬季.lrc in Resources */,
 				DAF103741C3B9C3D00A38DE3 /* RemoteAudioViewController.storyboard in Resources */,
+				DAF1040B1C3D0C9600A38DE3 /* placeholder.png in Resources */,
 				DAF103B91C3BAB3500A38DE3 /* 喜欢你.lrc in Resources */,
 				DAF103B81C3BAB3500A38DE3 /* 北京北京.mp3 in Resources */,
 				DAF103D21C3CB2B600A38DE3 /* test_1.jpg in Resources */,
@@ -266,8 +280,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DAF104091C3D042F00A38DE3 /* UIImage+ZZHelper.m in Sources */,
 				DAF1035C1C3B99B100A38DE3 /* ViewController.m in Sources */,
 				DAF103C81C3BB94700A38DE3 /* ZZLRCParser.m in Sources */,
+				DAF104061C3CFA6B00A38DE3 /* ZZArtworkHelper.m in Sources */,
 				DAF1036D1C3B9BA400A38DE3 /* LocalAudioViewController.m in Sources */,
 				DAF103591C3B99B100A38DE3 /* AppDelegate.m in Sources */,
 				DAF103C51C3BB3A200A38DE3 /* ZZAudioItem.m in Sources */,
@@ -423,6 +439,7 @@
 				DAF1036A1C3B99B100A38DE3 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

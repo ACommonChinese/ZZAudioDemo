@@ -12,6 +12,7 @@
 #import <MediaPlayer/MediaPlayer.h>
 #import "ZZAudioItem.h"
 #import "ZZLRCParser.h"
+#import "ZZArtworkHelper.h"
 
 @interface LocalAudioViewController () <AVAudioPlayerDelegate>
 
@@ -53,6 +54,8 @@
     [_player prepareToPlay]; // 准备播放
     if (error) return;
     self.lrcParser = [[ZZLRCParser alloc] initWithFilePath:_currentAudioItem.lrcPath]; // 歌词解析
+    
+    [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
 }
 
 // 播放
@@ -62,7 +65,7 @@
     }
     
     if (self.timer == nil) {
-        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.05 target:self selector:@selector(timerAction:) userInfo:nil repeats:YES]; // 每隔一小段时间，通过timerAction:方法更新显示的歌词，更新进度条 NSTimer对象有点特殊，它们retain target，所以在当前视图消失的时候应当把定时器invalide，销毁
+        self.timer = [NSTimer scheduledTimerWithTimeInterval:0.5 target:self selector:@selector(timerAction:) userInfo:nil repeats:YES]; // 每隔一小段时间，通过timerAction:方法更新显示的歌词，更新进度条 NSTimer对象有点特殊，它们retain target，所以在当前视图消失的时候应当把定时器invalide，销毁
     }
     [self.timer setFireDate:[NSDate date]]; // 触发定时器方法，写成[NSDate distantPast]也行
     
@@ -118,6 +121,20 @@
         // NSLog(@"%f %@", _player.currentTime, lrc);
     }
     self.lrcLabel.text = [self.lrcParser lrcByTime:self.player.currentTime];
+    
+    [self refreshArtwork];
+}
+
+// 锁屏下图片
+// 在锁屏界面显示歌曲信息(实时换图片MPMediaItemArtwork可以达到实时换歌词的目的（先这样处理，目前没有找到其他解决方法）
+- (void)refreshArtwork {
+    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[MPNowPlayingInfoCenter defaultCenter] nowPlayingInfo]];
+    // MPMediaItemArtwork *artwork = [dict objectForKey:MPMediaItemPropertyArtwork];
+    UIImage *image = _currentAudioItem.image == nil ? [UIImage imageNamed:@"placeholder"] : _currentAudioItem.image;
+    image = [ZZArtworkHelper artworkImageWithOriginImage:_currentAudioItem.image text:_lrcLabel.text];
+    MPMediaItemArtwork *newArtwork = [[MPMediaItemArtwork alloc] initWithImage:image];
+    [dict setObject:newArtwork forKey:MPMediaItemPropertyArtwork];
+    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
 }
 
 // 上一首
@@ -166,22 +183,17 @@
         
         // MPMediaItem *item = [[MPMediaItem alloc] init];
         // item.title =
-        
-        UIImage *image = [_currentAudioItem image];
-        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:image];
-        [dict setObject:artwork forKey:MPMediaItemPropertyArtwork];
-        
         /**
          MPNowPlayingInfoCenter 用于播放APP中正在播放的媒体信息.
          播放的信息会显示在锁屏页面和多任务管理页面.如果用户是用airplay播放的话 会自动投射到相应的设备上.
-         
          From apple: https://developer.apple.com/library/ios/documentation/MediaPlayer/Reference/MPNowPlayingInfoCenter_Class/index.html
          Use a now playing info center to set now-playing information for media being played by your app.
          */
-        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
+        MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:[UIImage imageNamed:@"placeholder"]];
+        [dict setObject:artwork forKey:MPMediaItemPropertyArtwork];
         
-        // [self becomeFirstResponder];
-        [[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
+        [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
+        [self refreshArtwork]; // 锁屏状态下图片，这个比较特别，通过不断的换图片达到在锁屏状态下不断的换歌词的效果
     }
 }
 
