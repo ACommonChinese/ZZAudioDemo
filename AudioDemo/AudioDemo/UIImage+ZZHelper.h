@@ -10,7 +10,9 @@
 
 @interface UIImage (ZZHelper)
 
+// 功能类似于截图
 + (UIImage *)imageWithView:(UIView *)view;
+
 - (UIImage *)scaleToSize:(CGSize)size;
 
 @end
