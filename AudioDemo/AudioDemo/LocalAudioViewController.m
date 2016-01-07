@@ -14,6 +14,13 @@
 #import "ZZLRCParser.h"
 #import "ZZArtworkHelper.h"
 
+// 播放模式
+typedef NS_ENUM(NSInteger, ZZLocalAudioPlayType) {
+    ZZLocalAudioPlayTypeOrder = 0,  // 顺序播放
+    ZZLocalAudioPlayTypeCycle,      // 循环播放
+    ZZLocalAudioPlayTypeSingleCycle // 单曲循环
+};
+
 @interface LocalAudioViewController () <AVAudioPlayerDelegate>
 
 /* 控件 */
@@ -30,6 +37,7 @@
 @property (nonatomic) ZZLRCParser *lrcParser; // 歌词解析器
 @property (nonatomic) NSTimer *timer;         // 定时器，每隔一段时间刷新进度
 
+@property (nonatomic) ZZLocalAudioPlayType playType; // 播放模式
 @end
 
 @implementation LocalAudioViewController
@@ -102,13 +110,6 @@
 // 更改播放进度
 - (IBAction)progressAction:(UISlider *)slider {
     self.player.currentTime = self.player.duration*_progress.value; // 正在播放（秒）
-    
-    // 锁屏状态下进度条
-    /**
-    NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[MPNowPlayingInfoCenter defaultCenter] nowPlayingInfo]];
-    [dict setObject:[NSNumber numberWithDouble:self.player.currentTime] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
-    [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
-     */
 }
 
 // 定时器刷新进度条
@@ -133,7 +134,7 @@
 - (void)refreshArtwork {
     if (_currentAudioItem.image) {
         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[MPNowPlayingInfoCenter defaultCenter] nowPlayingInfo]];
-        NSLog(@"refreshArtwork内存地址：%p", dict); // 打印结果显示这个内存地址不断的在变化
+        // NSLog(@"refreshArtwork内存地址：%p", dict); // 打印结果显示这个内存地址不断的在变化
         
         // MPMediaItemArtwork *artwork = [dict objectForKey:MPMediaItemPropertyArtwork];
         UIImage *image = [ZZArtworkHelper artworkImageWithOriginImage:_currentAudioItem.image text:_lrcLabel.text];
@@ -143,11 +144,17 @@
         // [dict setObject:_lrcParser.title forKey:MPMediaItemPropertyTitle]; // 歌曲名
         // NSLog(@"Now: %@", [dict objectForKey:MPMediaItemPropertyTitle]);
         
-        [dict setObject:_lrcParser.title forKey:MPMediaItemPropertyTitle]; // 歌曲名
-        [dict setObject:_lrcParser.author forKey:MPMediaItemPropertyArtist];  // 歌首，艺术家
-        [dict setObject:_lrcParser.albume forKey:MPMediaItemPropertyAlbumTitle]; // 专辑名
+        [dict setObject:_lrcParser.title forKey:MPMediaItemPropertyTitle];                    // 歌曲名
+        [dict setObject:_lrcParser.author forKey:MPMediaItemPropertyArtist];                  // 歌首，艺术家
+        [dict setObject:_lrcParser.albume forKey:MPMediaItemPropertyAlbumTitle];              // 专辑名
         [dict setObject:@(self.player.duration) forKey:MPMediaItemPropertyPlaybackDuration];  // 时间
-        
+        [dict setObject:@(self.player.currentTime) forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime]; // 进度
+        // 锁屏状态下进度条
+        /**
+         NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[MPNowPlayingInfoCenter defaultCenter] nowPlayingInfo]];
+         [dict setObject:[NSNumber numberWithDouble:self.player.currentTime] forKey:MPNowPlayingInfoPropertyElapsedPlaybackTime];
+         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
+         */
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
     }
 }
@@ -160,8 +167,7 @@
         return;
     } else {
         _currentAudioItem = [self.audioList objectAtIndex:--index];
-        [self prepare];
-        [self play:nil];
+        [self prepareAndPlay];
     }
 }
 
@@ -173,9 +179,13 @@
         return;
     } else {
         _currentAudioItem = [self.audioList objectAtIndex:++index];
-        [self prepare];
-        [self play:nil];
+        [self prepareAndPlay];
     }
+}
+
+- (void)prepareAndPlay {
+    [self prepare];
+    [self play:nil];
 }
 
 // 解决定时器的内存问题
@@ -210,7 +220,7 @@
         MPMediaItemArtwork *artwork = [[MPMediaItemArtwork alloc] initWithImage:image];
         [dict setObject:artwork forKey:MPMediaItemPropertyArtwork];
         
-        NSLog(@"configuration内存地址: %p", dict);
+        // NSLog(@"configuration内存地址: %p", dict);
         [[MPNowPlayingInfoCenter defaultCenter] setNowPlayingInfo:dict];
     }
 }
@@ -262,5 +272,47 @@
  
  当然也不一定是在viewcontroller中，也可以是在applicationDidEnterBackground:方法中开始接受远程控制，applicationDidBecomeActive:中结束接受远程控制
 */
+
+#pragma mark - 播放模式
+// 顺序播放模式
+- (IBAction)setOrderModel:(id)sender {
+    self.playType = ZZLocalAudioPlayTypeOrder;
+}
+
+// 循环播放模式
+- (IBAction)setCycleModel:(id)sender {
+    self.playType = ZZLocalAudioPlayTypeCycle;
+}
+
+// 单曲循环模式
+- (IBAction)setSingleCycleModel:(id)sender {
+    self.playType = ZZLocalAudioPlayTypeSingleCycle;
+}
+
+#pragma mark - <AVAudioPlayerDelegate>
+/* audioPlayerDidFinishPlaying:successfully: is called when a sound has finished playing. This method is NOT called if the player is stopped due to an interruption. */
+- (void)audioPlayerDidFinishPlaying:(AVAudioPlayer *)player successfully:(BOOL)flag {
+    if (flag) { // if flag is no, it means the system decode audio data fail
+        switch (self.playType) {
+            case ZZLocalAudioPlayTypeOrder: {      // 顺序播放
+                [self nextSong:nil];
+                break;
+            }
+            case ZZLocalAudioPlayTypeCycle: {      // 循环播放
+                if ([self.audioList indexOfObject:_currentAudioItem] >= self.audioList.count-1) {
+                    _currentAudioItem = self.audioList[0];
+                    [self prepareAndPlay];
+                }
+                break;
+            }
+            case ZZLocalAudioPlayTypeSingleCycle: { // 单曲循环
+                [self prepareAndPlay];
+                break;
+            }
+            default:
+                break;
+        }
+    }
+}
 
 @end
