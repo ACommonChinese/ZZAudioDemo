@@ -28,7 +28,7 @@
     CGSize size               = CGSizeMake([[UIScreen mainScreen] bounds].size.width-40, [[UIScreen mainScreen] bounds].size.width-40);
     CGRect rect = CGRectMake(0, 0, size.width, size.height);
     // UIGraphicsBeginImageContext(size); ios6
-    UIGraphicsBeginImageContextWithOptions(rect.size, YES, [[UIScreen mainScreen] scale]); // ios7
+    UIGraphicsBeginImageContextWithOptions(rect.size, YES, [[UIScreen mainScreen] scale]); // ios7 不这样写会出模糊 http://stackoverflow.com/questions/19024785/calayer-renderincontext-ios7
     [anImage drawInRect:rect];
     NSMutableParagraphStyle *paragraphStyle = [[NSMutableParagraphStyle alloc] init];
     paragraphStyle.alignment = NSTextAlignmentCenter;
